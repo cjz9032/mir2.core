@@ -63,7 +63,7 @@ public final class Maps {
 				Map ret = new Map();
 				ret.setWidth(br_map.readShortLE());
 				ret.setHeight(br_map.readShortLE());
-				br_map.skipBytes(28);
+				br_map.skipBytes(24);
 				boolean newMapFlag = br_map.readByte() == 2; // 新版地图每一个Tile占用14个字节，最后的两个字节作用未知
 				br_map.skipBytes(23);
 				MapTileInfo[][] mapTileInfos = new MapTileInfo[ret.getWidth()][ret.getHeight()];
