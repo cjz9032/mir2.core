@@ -193,7 +193,7 @@ public final class WIL implements WriteableImageLibrary {
 	/**
 	 * 是否只用WIL中的数据解析图片，而不看WIX的内容
 	 */
-	public volatile static boolean GLOBAL_ONLYWIL_MODE = true;
+	public volatile static boolean GLOBAL_ONLYWIL_MODE = false;
 
 	private int imageCount;
 
