@@ -259,7 +259,7 @@ public final class WIL implements WriteableImageLibrary {
 				return;
 			if (!wilOnlyMode && !f_wix.canRead())
 				return;
-			br_wil = new BinaryReader(f_wil, "r");
+			br_wil = new BinaryReader(f_wil);
 			br_wil.skipBytes(44); // 跳过标题
 			imageCount = br_wil.readIntLE(); // 图片数量
 			offsetList = new int[imageCount + 1];
@@ -271,7 +271,7 @@ public final class WIL implements WriteableImageLibrary {
 				// verFlag = br_wil.readIntLE();
 			}
 			if (!wilOnlyMode) {
-				BinaryReader br_wix = new BinaryReader(f_wix, "r");
+				BinaryReader br_wix = new BinaryReader(f_wix);
 				br_wix.skipBytes(44); // 跳过标题
 				int indexCount = br_wix.readIntLE(); // 索引数量(也是图片数量)
 				// if(verFlag != 0)
@@ -485,7 +485,6 @@ public final class WIL implements WriteableImageLibrary {
 		return wil;
 	}
 
-	@Override
 	public synchronized void save(String dir) {
 		if (!loaded)
 			return;
@@ -577,7 +576,7 @@ public final class WIL implements WriteableImageLibrary {
 			}
 			fos.close();
 			br_wil.close();
-			br_wil = new BinaryReader(flib, "r");
+			br_wil = new BinaryReader(flib);
 			bitCount = colorBit;
 		}
 		if (bitCount != colorBit)
@@ -593,7 +592,6 @@ public final class WIL implements WriteableImageLibrary {
 		}
 	}
 
-	@Override
 	public synchronized void tex(int index, byte[] rgbs, int colorBit, int width, int height, int offsetX,
 			int offsetY) {
 		if (rgbs == null || rgbs.length != width * height * 3 || rgbs.length != width * height * 4)
@@ -644,7 +642,6 @@ public final class WIL implements WriteableImageLibrary {
 		}
 	}
 
-	@Override
 	public synchronized void tex(int index, byte[][] pallete, byte[] rgb8s, int width, int height, int offsetX,
 			int offsetY) {
 		if (rgb8s == null || rgb8s.length != width * height || rgb8s.length != SDK.widthBytes(8 * width) * height)
@@ -684,7 +681,6 @@ public final class WIL implements WriteableImageLibrary {
 		}
 	}
 
-	@Override
 	public void tex(int index, int pallete[], byte[] rgb8s, int width, int height, int offsetX, int offsetY) {
 		if (rgb8s == null || rgb8s.length != width * height || rgb8s.length != SDK.widthBytes(8 * width) * height)
 			return;
@@ -735,7 +731,6 @@ public final class WIL implements WriteableImageLibrary {
 		fosimg.close();
 	}
 
-	@Override
 	public void tex(int index, short[] rgb16s, int width, int height, int offsetX, int offsetY) {
 		if (rgb16s == null || rgb16s.length != width * height || rgb16s.length != SDK.widthBytes(16 * width) * height)
 			return;
@@ -770,7 +765,6 @@ public final class WIL implements WriteableImageLibrary {
 		}
 	}
 
-	@Override
 	public synchronized void remove(int index) {
 		if (!loaded)
 			return;

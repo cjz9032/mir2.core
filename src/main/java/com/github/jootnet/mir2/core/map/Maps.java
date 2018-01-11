@@ -59,7 +59,7 @@ public final class Maps {
 			if(maps.containsKey(mapNo))
 				return maps.get(mapNo);
 			try{
-				BinaryReader br_map = new BinaryReader(new File(mapPath), "r");
+				BinaryReader br_map = new BinaryReader(new File(mapPath));
 				Map ret = new Map();
 				ret.setWidth(br_map.readShortLE());
 				ret.setHeight(br_map.readShortLE());

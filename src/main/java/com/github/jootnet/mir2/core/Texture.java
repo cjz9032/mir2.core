@@ -30,64 +30,62 @@ public final class Texture implements Cloneable {
 	/**
 	 * 空图片
 	 */
-	public static final Texture EMPTY = new Texture(new byte[]{SDK.palletes[EMPTY_COLOR_INDEX][1],SDK.palletes[EMPTY_COLOR_INDEX][2],SDK.palletes[EMPTY_COLOR_INDEX][3]}, 1, 1);
-	
+	public static final Texture EMPTY = new Texture(new byte[] { SDK.palletes[EMPTY_COLOR_INDEX][1],
+			SDK.palletes[EMPTY_COLOR_INDEX][2], SDK.palletes[EMPTY_COLOR_INDEX][3] }, 1, 1);
+
 	private byte[] pixels;
 	private int width;
 	private int height;
 	private volatile boolean dirty;
-	
+
 	private boolean emptyHoldFlag;
 	private static byte[] emptyPixels;
 	private static long clearCount;
 	private static Object clear_locker = new Object();
 	private Object proc_locker = new Object();
-	
+
 	/**
 	 * 获取图片宽度
 	 * 
-	 * @return
-	 * 		图片宽度(像素)
+	 * @return 图片宽度(像素)
 	 */
 	public int getWidth() {
 		return width;
 	}
-	
+
 	/**
 	 * 获取图片高度
 	 * 
-	 * @return
-	 * 		图片高度(像素)
+	 * @return 图片高度(像素)
 	 */
 	public int getHeight() {
 		return height;
 	}
-	
+
 	/**
 	 * 获取图片色彩数据<br>
 	 * 每一个像素点以R G B三个byte的分量存储<br>
 	 * 即返回的数据长度为图片宽度*图片高度*3大小<br>
 	 * 从图片左上角到右下角
 	 * 
-	 * @return
-	 * 		图片全部颜色数据
+	 * @return 图片全部颜色数据
 	 */
 	public byte[] getRGBs() {
 		return pixels;
 	}
-	
+
 	/**
 	 * 获取图片特定点色彩数据
 	 * 
 	 * @param x
-	 * 		横坐标(像素)
+	 *            横坐标(像素)
 	 * @param y
-	 * 		纵坐标(像素)
-	 * @return
-	 * 		特定点色彩数据，三个字节依次表示RGB分量
+	 *            纵坐标(像素)
+	 * @return 特定点色彩数据，三个字节依次表示RGB分量
 	 */
 	public byte[] getRGB(int x, int y) {
-		if(x > width - 1 || y > height - 1) return new byte[]{0,0,0};
+		if (x > width - 1 || y > height - 1)
+			return new byte[] { 0, 0, 0 };
 		int _idx = (x + y * width) * 3;
 		byte[] ret = new byte[3];
 		ret[0] = pixels[_idx];
@@ -95,48 +93,50 @@ public final class Texture implements Cloneable {
 		ret[2] = pixels[_idx + 2];
 		return ret;
 	}
-	
+
 	/**
 	 * 从RGB字节数组创建图片数据
 	 * 
 	 * @param sRGB
-	 * 		图片色彩数据数据<br>
-	 * 		每个像素占用三个字节进行存储，从图片左上角到右下角，必须是RGB顺序
+	 *            图片色彩数据数据<br>
+	 *            每个像素占用三个字节进行存储，从图片左上角到右下角，必须是RGB顺序
 	 * @param width
-	 * 		图片宽度
+	 *            图片宽度
 	 * @param height
-	 * 		图片高度
+	 *            图片高度
 	 * 
-	 * @throws IllegalArgumentException 传入的像素数据长度不符合要求
+	 * @throws IllegalArgumentException
+	 *             传入的像素数据长度不符合要求
 	 */
 	public Texture(byte[] sRGB, int width, int height) throws IllegalArgumentException {
 		this(sRGB, width, height, true);
 	}
-	
+
 	/**
 	 * 从RGB字节数组创建图片数据
 	 * 
 	 * @param sRGB
-	 * 		图片色彩数据数据<br>
-	 * 		每个像素占用三个字节进行存储，从图片左上角到右下角，必须是RGB顺序
+	 *            图片色彩数据数据<br>
+	 *            每个像素占用三个字节进行存储，从图片左上角到右下角，必须是RGB顺序
 	 * @param width
-	 * 		图片宽度
+	 *            图片宽度
 	 * @param height
-	 * 		图片高度
+	 *            图片高度
 	 * @param emptyHoldFlag
-	 * 		是否存储一个空的字节数组，用于在将图片清空时快速反应
+	 *            是否存储一个空的字节数组，用于在将图片清空时快速反应
 	 * 
-	 * @throws IllegalArgumentException 传入的像素数据长度不符合要求
+	 * @throws IllegalArgumentException
+	 *             传入的像素数据长度不符合要求
 	 */
 	public Texture(byte[] sRGB, int width, int height, boolean emptyHoldFlag) throws IllegalArgumentException {
-		if(sRGB != null && width > 0 && height > 0 && sRGB.length != (width * height * 3))
+		if (sRGB != null && width > 0 && height > 0 && sRGB.length != (width * height * 3))
 			throw new IllegalArgumentException("sRGB length not match width * height * 3 !!!");
 		this.pixels = sRGB;
 		this.width = width;
 		this.height = height;
 		this.emptyHoldFlag = emptyHoldFlag;
 	}
-	
+
 	/**
 	 * 判断当前图片是否为空
 	 * 
@@ -145,7 +145,7 @@ public final class Texture implements Cloneable {
 	public final boolean empty() {
 		return this == EMPTY || pixels == null || pixels.length == 0 || width < 1 || height < 1;
 	}
-	
+
 	/**
 	 * 判断当前图片是否被修改过<br>
 	 * 当前函数返回之后，图片会被置为未修改，即下次调用会返回false
@@ -159,19 +159,19 @@ public final class Texture implements Cloneable {
 			return _dirty;
 		}
 	}
-	
+
 	protected void finalize() {
-		if(emptyHoldFlag) {
+		if (emptyHoldFlag) {
 			synchronized (clear_locker) {
 				clearCount--;
-				if(clearCount < 1) {
+				if (clearCount < 1) {
 					clearCount = 0;
 					emptyPixels = null;
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * 创建当前图片数据的克隆，完整克隆<br>
 	 * 如需创建当前图片部分区域的克隆，则使用{@link #clip(int, int, int, int)}
@@ -181,8 +181,8 @@ public final class Texture implements Cloneable {
 	 * @see #clip(int, int, int, int)
 	 */
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		if(empty())
+	public Texture clone() throws CloneNotSupportedException {
+		if (empty())
 			return EMPTY;
 		synchronized (proc_locker) {
 			byte[] sRGB = new byte[pixels.length];
@@ -190,49 +190,63 @@ public final class Texture implements Cloneable {
 			return new Texture(sRGB, width, height);
 		}
 	}
-	
+
+	/**
+	 * 将当前纹理数据覆盖到目标纹理 <br>
+	 * 需要两者数据长度一致
+	 * 
+	 * @param that
+	 *            要被覆盖的纹理
+	 */
+	public void copyTo(Texture that) {
+		if (this.pixels.length != that.pixels.length)
+			return;
+		System.arraycopy(pixels, 0, that.pixels, 0, pixels.length);
+	}
+
 	/**
 	 * 创建当前图片数据的克隆，部分克隆<br>
 	 * 如果区域的右方或下方超出图片宽高则忽略超出部分，但左上方不可超出，如果超出则直接不进行处理<br>
 	 * 如需创建当前图完整克隆，则使用{@link #clone()}
 	 * 
 	 * @param x
-	 * 		克隆区域起始x坐标
+	 *            克隆区域起始x坐标
 	 * @param y
-	 * 		克隆区域起始y坐标
+	 *            克隆区域起始y坐标
 	 * @param w
-	 * 		克隆区域宽度
+	 *            克隆区域宽度
 	 * @param h
-	 * 		克隆区域高度
+	 *            克隆区域高度
 	 * 
 	 * @return 当前图片部分区域克隆
 	 * 
 	 * @see #clone()
 	 */
 	public final Texture clip(int x, int y, int w, int h) {
-		if(empty())
+		if (empty())
 			return EMPTY;
-		if(x < 0 || x > width || y < 0 || y > height) return EMPTY;
+		if (x < 0 || x > width || y < 0 || y > height)
+			return EMPTY;
 		synchronized (proc_locker) {
 			int rx = x + w;
-			if(rx >= width)
+			if (rx >= width)
 				rx = width - 1;
 			int by = y + h;
-			if(by >= height)
+			if (by >= height)
 				by = height - 1;
 			byte[] npixels = new byte[(rx - x) * (by - y) * 3];
-			for(int i = y; i < by; ++i) {
-				for(int j = x; j < rx; ++j) {
+			for (int i = y; i < by; ++i) {
+				for (int j = x; j < rx; ++j) {
 					int _idx = (j + i * width) * 3;
 					npixels[(j - x + (i - y) * width) * 3] = pixels[_idx];
 					npixels[(j - x + (i - y) * width) * 3 + 1] = pixels[_idx + 1];
 					npixels[(j - x + (i - y) * width) * 3 + 2] = pixels[_idx + 2];
 				}
 			}
-			return new Texture(npixels, rx -x, by -y);
+			return new Texture(npixels, rx - x, by - y);
 		}
 	}
-	
+
 	/**
 	 * 清除图片色彩数据<br>
 	 * 清除图片全部色彩数据<br>
@@ -241,14 +255,15 @@ public final class Texture implements Cloneable {
 	 * @see #clear(int, int, int, int)
 	 */
 	public final void clear() {
-		if(empty()) return;
+		if (empty())
+			return;
 		synchronized (proc_locker) {
-			if(!emptyHoldFlag) {
+			if (!emptyHoldFlag) {
 				byte[] _emptyPixels = new byte[pixels.length];
 				System.arraycopy(_emptyPixels, 0, pixels, 0, _emptyPixels.length);
 			} else {
 				synchronized (clear_locker) {
-					if(emptyPixels == null || emptyPixels.length < pixels.length)
+					if (emptyPixels == null || emptyPixels.length < pixels.length)
 						emptyPixels = new byte[pixels.length];
 					System.arraycopy(emptyPixels, 0, pixels, 0, pixels.length);
 					clearCount++;
@@ -257,7 +272,7 @@ public final class Texture implements Cloneable {
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 清除图片色彩数据<br>
 	 * 清除图片内部分区域色彩数据<br>
@@ -265,28 +280,30 @@ public final class Texture implements Cloneable {
 	 * 如果需要清除全部色彩数据则使用{@link #clear()}
 	 * 
 	 * @param x
-	 * 		要清除的区域起始x坐标
+	 *            要清除的区域起始x坐标
 	 * @param y
-	 * 		要清除的区域起始y坐标
+	 *            要清除的区域起始y坐标
 	 * @param w
-	 * 		要清除的区域宽度
+	 *            要清除的区域宽度
 	 * @param h
-	 * 		要清除的区域高度
+	 *            要清除的区域高度
 	 * 
 	 * @see #clear()
 	 */
 	public final void clear(int x, int y, int w, int h) {
-		if(empty()) return;
-		if(x < 0 || x > width || y < 0 || y > height) return;
+		if (empty())
+			return;
+		if (x < 0 || x > width || y < 0 || y > height)
+			return;
 		synchronized (proc_locker) {
 			int rx = x + w;
-			if(rx >= width)
+			if (rx >= width)
 				rx = width - 1;
 			int by = y + h;
-			if(by >= height)
+			if (by >= height)
 				by = height - 1;
-			for(int i = y; i < by; ++i) {
-				for(int j = x; j < rx; ++j) {
+			for (int i = y; i < by; ++i) {
+				for (int j = x; j < rx; ++j) {
 					int _idx = (j + i * width) * 3;
 					pixels[_idx] = pixels[_idx + 1] = pixels[_idx + 2] = 0;
 				}
@@ -294,7 +311,7 @@ public final class Texture implements Cloneable {
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 将图片转换为灰白<br>
 	 * 将图片全部区域转换为灰白<br>
@@ -303,9 +320,10 @@ public final class Texture implements Cloneable {
 	 * @see #toGray(int, int, int, int)
 	 */
 	public final void toGray() {
-		if(empty()) return;
+		if (empty())
+			return;
 		synchronized (proc_locker) {
-			for(int i = 0; i < pixels.length - 2; i += 3) {
+			for (int i = 0; i < pixels.length - 2; i += 3) {
 				pixels[i] *= 0.299;
 				pixels[i + 1] *= 0.587;
 				pixels[i + 2] *= 0.114;
@@ -313,7 +331,7 @@ public final class Texture implements Cloneable {
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 将图片转换为灰白<br>
 	 * 将图片部分区域转换为灰白<br>
@@ -321,28 +339,30 @@ public final class Texture implements Cloneable {
 	 * 如果需要转换全部区域为灰白则使用{@link #toGray()}
 	 * 
 	 * @param x
-	 * 		要转换的区域起始x坐标
+	 *            要转换的区域起始x坐标
 	 * @param y
-	 * 		要转换的区域起始y坐标
+	 *            要转换的区域起始y坐标
 	 * @param w
-	 * 		要转换的区域宽度
+	 *            要转换的区域宽度
 	 * @param h
-	 * 		要转换的区域高度
+	 *            要转换的区域高度
 	 * 
 	 * @see #toGray()
 	 */
 	public final void toGray(int x, int y, int w, int h) {
-		if(empty()) return;
-		if(x < 0 || x > width || y < 0 || y > height) return;
+		if (empty())
+			return;
+		if (x < 0 || x > width || y < 0 || y > height)
+			return;
 		synchronized (proc_locker) {
 			int rx = x + w;
-			if(rx >= width)
+			if (rx >= width)
 				rx = width - 1;
 			int by = y + h;
-			if(by >= height)
+			if (by >= height)
 				by = height - 1;
-			for(int i = y; i < by; ++i) {
-				for(int j = x; j < rx; ++j) {
+			for (int i = y; i < by; ++i) {
+				for (int j = x; j < rx; ++j) {
 					int _idx = (j + i * width) * 3;
 					pixels[_idx] *= 0.299;
 					pixels[_idx + 1] *= 0.587;
@@ -352,7 +372,7 @@ public final class Texture implements Cloneable {
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 将图片进行反色处理<br>
 	 * 将图片全部区域进行反色处理<br>
@@ -361,15 +381,16 @@ public final class Texture implements Cloneable {
 	 * @see #inverse(int, int, int, int)
 	 */
 	public final void inverse() {
-		if(empty()) return;
+		if (empty())
+			return;
 		synchronized (proc_locker) {
-			for(int i = 0; i < pixels.length; ++i) {
+			for (int i = 0; i < pixels.length; ++i) {
 				pixels[i] ^= 0xff;
 			}
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 将图片进行反色处理<br>
 	 * 将图片部分区域进行反色处理<br>
@@ -377,28 +398,30 @@ public final class Texture implements Cloneable {
 	 * 如果需要对全部区域进行反色处理则使用{@link #inverse()}
 	 * 
 	 * @param x
-	 * 		要转换的区域起始x坐标
+	 *            要转换的区域起始x坐标
 	 * @param y
-	 * 		要转换的区域起始y坐标
+	 *            要转换的区域起始y坐标
 	 * @param w
-	 * 		要转换的区域宽度
+	 *            要转换的区域宽度
 	 * @param h
-	 * 		要转换的区域高度
+	 *            要转换的区域高度
 	 * 
 	 * @see #inverse()
 	 */
 	public final void inverse(int x, int y, int w, int h) {
-		if(empty()) return;
-		if(x < 0 || x > width || y < 0 || y > height) return;
+		if (empty())
+			return;
+		if (x < 0 || x > width || y < 0 || y > height)
+			return;
 		synchronized (proc_locker) {
 			int rx = x + w;
-			if(rx >= width)
+			if (rx >= width)
 				rx = width - 1;
 			int by = y + h;
-			if(by >= height)
+			if (by >= height)
 				by = height - 1;
-			for(int i = y; i < by; ++i) {
-				for(int j = x; j < rx; ++j) {
+			for (int i = y; i < by; ++i) {
+				for (int j = x; j < rx; ++j) {
 					int _idx = (j + i * width) * 3;
 					pixels[_idx] ^= 0xff;
 					pixels[_idx + 1] ^= 0xff;
@@ -408,57 +431,62 @@ public final class Texture implements Cloneable {
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 将图片进行透明度处理<br>
 	 * 将图片全部区域进行透明度处理<br>
 	 * 如果需要对部分区域进行透明度处理则使用{@link #alpha(float, int, int, int, int)}
 	 * 
-	 * @param alpha 透明度
+	 * @param alpha
+	 *            透明度
 	 * 
 	 * @see #alpha(float, int, int, int, int)
 	 */
 	public final void alpha(float alpha) {
-		if(empty()) return;
+		if (empty())
+			return;
 		synchronized (proc_locker) {
-			for(int i = 0; i < pixels.length; ++i) {
+			for (int i = 0; i < pixels.length; ++i) {
 				pixels[i] *= alpha;
 			}
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 将图片进行透明度处理<br>
 	 * 将图片部分区域进行透明度处理<br>
 	 * 如果区域的右方或下方超出图片宽高则忽略超出部分，但左上方不可超出，如果超出则直接不进行处理<br>
 	 * 如果需要对全部区域进行透明度处理则使用{@link #alpha(float)}
 	 * 
-	 * @param alpha 透明度
+	 * @param alpha
+	 *            透明度
 	 * 
 	 * @param x
-	 * 		要处理的区域起始x坐标
+	 *            要处理的区域起始x坐标
 	 * @param y
-	 * 		要处理的区域起始y坐标
+	 *            要处理的区域起始y坐标
 	 * @param w
-	 * 		要处理的区域宽度
+	 *            要处理的区域宽度
 	 * @param h
-	 * 		要处理的区域高度
+	 *            要处理的区域高度
 	 * 
 	 * @see #alpha(float)
 	 */
 	public final void alpha(float alpha, int x, int y, int w, int h) {
-		if(empty()) return;
-		if(x < 0 || x > width || y < 0 || y > height) return;
+		if (empty())
+			return;
+		if (x < 0 || x > width || y < 0 || y > height)
+			return;
 		synchronized (proc_locker) {
 			int rx = x + w;
-			if(rx >= width)
+			if (rx >= width)
 				rx = width - 1;
 			int by = y + h;
-			if(by >= height)
+			if (by >= height)
 				by = height - 1;
-			for(int i = y; i < by; ++i) {
-				for(int j = x; j < rx; ++j) {
+			for (int i = y; i < by; ++i) {
+				for (int j = x; j < rx; ++j) {
 					int _idx = (j + i * width) * 3;
 					pixels[_idx] *= alpha;
 					pixels[_idx + 1] *= alpha;
@@ -468,7 +496,7 @@ public final class Texture implements Cloneable {
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 将一副目标图像混合到当前图像上<br>
 	 * 使用普通的图像叠加方式<br>
@@ -478,35 +506,43 @@ public final class Texture implements Cloneable {
 	 * 此操作不改变目标图像数据，即使传递了alpha参数
 	 * 
 	 * @param tar
-	 * 		目标图像
+	 *            目标图像
 	 * @param locx
-	 * 		图像叠加起始X坐标
+	 *            图像叠加起始X坐标
 	 * @param locy
-	 * 		图像叠加起始Y坐标
+	 *            图像叠加起始Y坐标
 	 * @param alpha
-	 * 		目标图像透明度
+	 *            目标图像透明度
 	 * 
 	 * @see #blendAdd(Texture, int, int, float)
 	 * @see #blendAddTransparent(Texture, int, int, float, byte, byte, byte)
 	 * @see #blendNormalTransparent(Texture, int, int, float, byte, byte, byte)
 	 */
 	public final void blendNormal(Texture tar, int locx, int locy, float alpha) {
-		if(empty()) return;
-		if(tar.empty()) return;
+		if (empty())
+			return;
+		if (tar.empty())
+			return;
 		synchronized (proc_locker) {
 			int x = locx;
 			int y = locy;
-			if(x < 0 || x > width || y < 0 || y < height) return;
-			int rx = x + tar.width;
-			if(rx >= width)
+			if (x > width || y > height || (x < 0 && -x >= tar.width) || (y < 0 && -y >= tar.height))
+				return;
+			// 允许部分在屏幕外
+			int left = x < 0 ? 0 : x;
+			int top = y < 0 ? 0 : y;
+			int tarleft = x < 0 ? -x : 0;
+			int tartop = y < 0 ? -y : 0;
+			int rx = left + tar.width - tarleft;
+			if (rx >= width)
 				rx = width - 1;
-			int by = y + tar.height;
-			if(by >= height)
+			int by = top + tar.height - tartop;
+			if (by >= height)
 				by = height - 1;
-			for(int i = y; i < by; ++i) {
-				for(int j = x; j < rx; ++j) {
+			for (int i = top; i < by; ++i) {
+				for (int j = left; j < rx; ++j) {
 					int _idx_this = (j + i * width) * 3;
-					int _idx_that = (j - x + (i - y) * width) * 3;
+					int _idx_that = (j - left + tarleft + (i - top + tartop) * tar.width) * 3;
 					pixels[_idx_this] = (byte) (tar.pixels[_idx_that] * alpha);
 					pixels[_idx_this + 1] = (byte) (tar.pixels[_idx_that + 1] * alpha);
 					pixels[_idx_this + 2] = (byte) (tar.pixels[_idx_that + 2] * alpha);
@@ -515,7 +551,7 @@ public final class Texture implements Cloneable {
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 将一副目标图像混合到当前图像上<br>
 	 * 使用普通的图像叠加方式<br>
@@ -525,45 +561,53 @@ public final class Texture implements Cloneable {
 	 * 支持透明色，即如果目标坐标目标图片的颜色是给定值则忽略
 	 * 
 	 * @param tar
-	 * 		目标图像
+	 *            目标图像
 	 * @param locx
-	 * 		图像叠加起始X坐标
+	 *            图像叠加起始X坐标
 	 * @param locy
-	 * 		图像叠加起始Y坐标
+	 *            图像叠加起始Y坐标
 	 * @param alpha
-	 * 		目标图像透明度
+	 *            目标图像透明度
 	 * @param r
-	 * 		透明色R分量
+	 *            透明色R分量
 	 * @param g
-	 * 		透明色分量
+	 *            透明色分量
 	 * @param b
-	 * 		透明色分量
+	 *            透明色分量
 	 * 
 	 * @see #blendAdd(Texture, int, int, float)
 	 * @see #blendAddTransparent(Texture, int, int, float, byte, byte, byte)
 	 * @see #blendNormal(Texture, int, int, float)
 	 */
 	public final void blendNormalTransparent(Texture tar, int locx, int locy, float alpha, byte r, byte g, byte b) {
-		if(empty()) return;
-		if(tar.empty()) return;
+		if (empty())
+			return;
+		if (tar.empty())
+			return;
 		synchronized (proc_locker) {
 			int x = locx;
 			int y = locy;
-			if(x < 0 || x > width || y < 0 || y < height) return;
-			int rx = x + tar.width;
-			if(rx >= width)
+			if (x > width || y > height || (x < 0 && -x >= tar.width) || (y < 0 && -y >= tar.height))
+				return;
+			// 允许部分在屏幕外
+			int left = x < 0 ? 0 : x;
+			int top = y < 0 ? 0 : y;
+			int tarleft = x < 0 ? -x : 0;
+			int tartop = y < 0 ? -y : 0;
+			int rx = left + tar.width - tarleft;
+			if (rx >= width)
 				rx = width - 1;
-			int by = y + tar.height;
-			if(by >= height)
+			int by = top + tar.height - tartop;
+			if (by >= height)
 				by = height - 1;
-			for(int i = y; i < by; ++i) {
-				for(int j = x; j < rx; ++j) {
+			for (int i = top; i < by; ++i) {
+				for (int j = left; j < rx; ++j) {
 					int _idx_this = (j + i * width) * 3;
-					int _idx_that = (j - x + (i - y) * width) * 3;
+					int _idx_that = (j - left + tarleft + (i - top + tartop) * tar.width) * 3;
 					byte _r = tar.pixels[_idx_that];
 					byte _g = tar.pixels[_idx_that + 1];
 					byte _b = tar.pixels[_idx_that + 2];
-					if(r != _r || _g != g || _b != b) {
+					if (r != _r || _g != g || _b != b) {
 						pixels[_idx_this] = (byte) (_r * alpha);
 						pixels[_idx_this + 1] = (byte) (_g * alpha);
 						pixels[_idx_this + 2] = (byte) (_b * alpha);
@@ -573,7 +617,7 @@ public final class Texture implements Cloneable {
 			dirty = true;
 		}
 	}
-	
+
 	/**
 	 * 将一副目标图像混合到当前图像上<br>
 	 * 使用Overlay的图像叠加方式<br>
@@ -583,47 +627,62 @@ public final class Texture implements Cloneable {
 	 * 此操作不改变目标图像数据，即使传递了alpha参数
 	 * 
 	 * @param tar
-	 * 		目标图像
+	 *            目标图像
 	 * @param locx
-	 * 		图像叠加起始X坐标
+	 *            图像叠加起始X坐标
 	 * @param locy
-	 * 		图像叠加起始Y坐标
+	 *            图像叠加起始Y坐标
 	 * @param alpha
-	 * 		目标图像透明度
+	 *            目标图像透明度
 	 * 
 	 * @see #blendNormal(Texture, int, int, float)
 	 * @see #blendNormalTransparent(Texture, int, int, float, byte, byte, byte)
 	 * @see #blendAddTransparent(Texture, int, int, float, byte, byte, byte)
 	 */
 	public final void blendAdd(Texture tar, int locx, int locy, float alpha) {
-		if(empty()) return;
-		if(tar.empty()) return;
+		if (empty())
+			return;
+		if (tar.empty())
+			return;
 		synchronized (proc_locker) {
 			int x = locx;
 			int y = locy;
-			if(x < 0 || x > width || y < 0 || y < height) return;
-			int rx = x + tar.width;
-			if(rx >= width)
+			if (x > width || y > height || (x < 0 && -x >= tar.width) || (y < 0 && -y >= tar.height))
+				return;
+			// 允许部分在屏幕外
+			int left = x < 0 ? 0 : x;
+			int top = y < 0 ? 0 : y;
+			int tarleft = x < 0 ? -x : 0;
+			int tartop = y < 0 ? -y : 0;
+			int rx = left + tar.width - tarleft;
+			if (rx >= width)
 				rx = width - 1;
-			int by = y + tar.height;
-			if(by >= height)
+			int by = top + tar.height - tartop;
+			if (by >= height)
 				by = height - 1;
-			for(int i = y; i < by; ++i) {
-				for(int j = x; j < rx; ++j) {
+			float Rs, Sr, Rd, Dr = 1, Gs, Sg, Gd, Dg = 1, Bs, Sb, Bd, Db = 1;
+			for (int i = top; i < by; ++i) {
+				for (int j = left; j < rx; ++j) {
 					int _idx_this = (j + i * width) * 3;
-					int _idx_that = (j - x + (i - y) * width) * 3;
-					byte r = (byte) (tar.pixels[_idx_that] * alpha);
-					byte g = (byte) (tar.pixels[_idx_that + 1] * alpha);
-					byte b = (byte) (tar.pixels[_idx_that + 2] * alpha);
-					pixels[_idx_this] = (byte) ((r < 128) ? (2 * pixels[_idx_this] * r / 255) : (255 - 2 * (255 - pixels[_idx_this]) * (255 - r) / 255));
-					pixels[_idx_this + 1] = (byte) ((g < 128) ? (2 * pixels[_idx_this + 1] * g / 255) : (255 - 2 * (255 - pixels[_idx_this + 1]) * (255 - g) / 255));
-					pixels[_idx_this + 2] = (byte) ((b < 128) ? (2 * pixels[_idx_this + 2] * b / 255) : (255 - 2 * (255 - pixels[_idx_this + 2]) * (255 - b) / 255));
+					int _idx_that = (j - left + tarleft + (i - top + tartop) * tar.width) * 3;
+					Rd = tar.pixels[_idx_that] * alpha;
+					Gd = tar.pixels[_idx_that + 1] * alpha;
+					Bd = tar.pixels[_idx_that + 2] * alpha;
+					Rs = pixels[_idx_this];
+					Sr = Rs / 255;
+					Gs = pixels[_idx_this + 1];
+					Sg = Gs / 255;
+					Bs = pixels[_idx_this + 2];
+					Sb = Bs / 255;
+					pixels[_idx_this] = (byte) Math.min(255, Rs * Sr + Rd * Dr);
+					pixels[_idx_this + 1] = (byte) Math.min(255, Gs * Sg + Gd * Dg);
+					pixels[_idx_this + 2] = (byte) Math.min(255, Bs * Sb + Bd * Db);
 				}
 			}
 		}
 		dirty = true;
 	}
-	
+
 	/**
 	 * 将一副目标图像混合到当前图像上<br>
 	 * 使用Overlay的图像叠加方式<br>
@@ -633,48 +692,66 @@ public final class Texture implements Cloneable {
 	 * 支持透明色，即如果目标坐标目标图片的颜色是给定值则忽略
 	 * 
 	 * @param tar
-	 * 		目标图像
+	 *            目标图像
 	 * @param locx
-	 * 		图像叠加起始X坐标
+	 *            图像叠加起始X坐标
 	 * @param locy
-	 * 		图像叠加起始Y坐标
+	 *            图像叠加起始Y坐标
 	 * @param alpha
-	 * 		目标图像透明度
+	 *            目标图像透明度
 	 * @param r
-	 * 		透明色R分量
+	 *            透明色R分量
 	 * @param g
-	 * 		透明色分量
+	 *            透明色分量
 	 * @param b
-	 * 		透明色分量
+	 *            透明色分量
 	 * 
 	 * @see #blendNormal(Texture, int, int, float)
 	 * @see #blendNormalTransparent(Texture, int, int, float, byte, byte, byte)
 	 * @see #blendAdd(Texture, int, int, float)
 	 */
 	public final void blendAddTransparent(Texture tar, int locx, int locy, float alpha, byte r, byte g, byte b) {
-		if(empty()) return;
-		if(tar.empty()) return;
+		if (empty())
+			return;
+		if (tar.empty())
+			return;
 		synchronized (proc_locker) {
 			int x = locx;
 			int y = locy;
-			if(x < 0 || x > width || y < 0 || y < height) return;
-			int rx = x + tar.width;
-			if(rx >= width)
+			if (x > width || y > height || (x < 0 && -x >= tar.width) || (y < 0 && -y >= tar.height))
+				return;
+			// 允许部分在屏幕外
+			int left = x < 0 ? 0 : x;
+			int top = y < 0 ? 0 : y;
+			int tarleft = x < 0 ? -x : 0;
+			int tartop = y < 0 ? -y : 0;
+			int rx = left + tar.width - tarleft;
+			if (rx >= width)
 				rx = width - 1;
-			int by = y + tar.height;
-			if(by >= height)
+			int by = top + tar.height - tartop;
+			if (by >= height)
 				by = height - 1;
-			for(int i = y; i < by; ++i) {
-				for(int j = x; j < rx; ++j) {
+			float Rs, Sr, Rd, Dr = 1, Gs, Sg, Gd, Dg = 1, Bs, Sb, Bd, Db = 1;
+			for (int i = top; i < by; ++i) {
+				for (int j = left; j < rx; ++j) {
 					int _idx_this = (j + i * width) * 3;
-					int _idx_that = (j - x + (i - y) * width) * 3;
+					int _idx_that = (j - left + tarleft + (i - top + tartop) * tar.width) * 3;
 					byte _r = (byte) (tar.pixels[_idx_that] * alpha);
 					byte _g = (byte) (tar.pixels[_idx_that + 1] * alpha);
 					byte _b = (byte) (tar.pixels[_idx_that + 2] * alpha);
-					if(r != _r || _g != g || _b != b) {
-						pixels[_idx_this] = (byte) ((_r < 128) ? (2 * pixels[_idx_this] * _r / 255) : (255 - 2 * (255 - pixels[_idx_this]) * (255 - _r) / 255));
-						pixels[_idx_this + 1] = (byte) ((_g < 128) ? (2 * pixels[_idx_this + 1] * _g / 255) : (255 - 2 * (255 - pixels[_idx_this + 1]) * (255 - _g) / 255));
-						pixels[_idx_this + 2] = (byte) ((_b < 128) ? (2 * pixels[_idx_this + 2] * _b / 255) : (255 - 2 * (255 - pixels[_idx_this + 2]) * (255 - _b) / 255));
+					if (r != _r || _g != g || _b != b) {
+						Rd = _r * alpha;
+						Gd = _g * alpha;
+						Bd = _b * alpha;
+						Rs = pixels[_idx_this];
+						Sr = Rs / 255;
+						Gs = pixels[_idx_this + 1];
+						Sg = Gs / 255;
+						Bs = pixels[_idx_this + 2];
+						Sb = Bs / 255;
+						pixels[_idx_this] = (byte) Math.min(255, Rs * Sr + Rd * Dr);
+						pixels[_idx_this + 1] = (byte) Math.min(255, Gs * Sg + Gd * Dg);
+						pixels[_idx_this + 2] = (byte) Math.min(255, Bs * Sb + Bd * Db);
 					}
 				}
 			}
