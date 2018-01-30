@@ -117,6 +117,8 @@ public final class Maps {
 						mi.setAniTick(br_map.readByte());
 						// 读取资源文件索引(第11个byte)
 						mi.setObjFileIdx(br_map.readByte());
+						if(mi.getObjFileIdx() != 0)
+							mi.setObjFileIdx((byte) (mi.getObjFileIdx() + 1));
 						// 读取光照(第12个byte)
 						mi.setLight(br_map.readByte());
 						if(newMapFlag)
