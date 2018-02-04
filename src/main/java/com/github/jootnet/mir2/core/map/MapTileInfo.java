@@ -44,11 +44,13 @@ public final class MapTileInfo {
 	/** 是否有门 */
 	private boolean hasDoor;
 	/** 门偏移 */
-	private byte doorOffset;
-	/** 门是否开启 */
-	private boolean doorOpen;
+	private short doorOffset;
+	/** 门是否可开启 */
+	private boolean doorCanOpen;
 	/** 动画帧数 */
 	private byte aniFrame;
+	/** 动画绘制是否需要混合 */
+	private boolean aniBlendMode;
 	/** 是否有动画 */
 	private boolean hasAni;
 	/** 动画跳帧数 */
@@ -141,20 +143,20 @@ public final class MapTileInfo {
 		this.hasDoor = hasDoor;
 	}
 	/** 获取门偏移 */
-	public byte getDoorOffset() {
+	public short getDoorOffset() {
 		return doorOffset;
 	}
 	/** 设置门偏移 */
-	void setDoorOffset(byte doorOffset) {
+	void setDoorOffset(short doorOffset) {
 		this.doorOffset = doorOffset;
 	}
-	/** 获取该地图块门是否打开 */
-	public boolean isDoorOpen() {
-		return doorOpen;
+	/** 获取该地图块门是否可打开 */
+	public boolean isDoorCanOpen() {
+		return doorCanOpen;
 	}
-	/** 设置该地图块门是否打开 */
-	void setDoorOpen(boolean doorOpen) {
-		this.doorOpen = doorOpen;
+	/** 设置该地图块门是否可打开 */
+	void setDoorCanOpen(boolean doorCanOpen) {
+		this.doorCanOpen = doorCanOpen;
 	}
 	/** 获取动画帧数 */
 	public byte getAniFrame() {
@@ -163,6 +165,16 @@ public final class MapTileInfo {
 	/** 设置动画帧数 */
 	void setAniFrame(byte aniFrame) {
 		this.aniFrame = aniFrame;
+	}
+	/**
+	 * 获取动画绘制模式<br>动画像素叠加是否需要混合
+	 */
+	public boolean isAniBlendMode() {
+		return aniBlendMode;
+	}
+	/** 设置动画绘制模式<br>动画像素叠加是否需要混合 */
+	void setAniBlendMode(boolean aniBlendMode) {
+		this.aniBlendMode = aniBlendMode;
 	}
 	/** 获取该地图块是否有动画 */
 	public boolean isHasAni() {

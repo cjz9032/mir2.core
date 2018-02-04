@@ -99,19 +99,22 @@ public final class Maps {
 						// 读取门索引(第7个byte)
 						byte btTmp = br_map.readByte();
 						if((btTmp & 0x80) == 0x80) {
-							mi.setDoorIdx((byte) (btTmp & 0x7F));
-							mi.setHasDoor(true);
+							mi.setDoorCanOpen(true);
 						}
+						mi.setDoorIdx((byte) (btTmp & 0x7F));
 						// 读取门偏移(第8个byte)
 						btTmp = br_map.readByte();
-						mi.setDoorOffset(btTmp);
-						if((btTmp & 0x80) == 0x80) mi.setDoorOpen(true);
+						if(btTmp != 0) {
+							mi.setHasDoor(true);
+						}
+						mi.setDoorOffset((short) (btTmp & 0x80));
 						// 读取动画帧数(第9个byte)
 						btTmp = br_map.readByte();
-						mi.setAniFrame(btTmp);
-						if((btTmp & 0x80) == 0x80) {
+						if((btTmp & 0x7F) > 0) {
 							mi.setAniFrame((byte) (btTmp & 0x7F));
 							mi.setHasAni(true);
+							mi.setHasObj(false);
+							mi.setAniBlendMode((btTmp & 0x80) == 0x80);
 						}
 						// 读取并设置动画跳帧数(第10个byte)
 						mi.setAniTick(br_map.readByte());
