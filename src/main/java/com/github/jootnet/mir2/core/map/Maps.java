@@ -107,7 +107,7 @@ public final class Maps {
 						if(btTmp != 0) {
 							mi.setHasDoor(true);
 						}
-						mi.setDoorOffset((short) (btTmp & 0x80));
+						mi.setDoorOffset((short) (btTmp & 0xFF));
 						// 读取动画帧数(第9个byte)
 						btTmp = br_map.readByte();
 						if((btTmp & 0x7F) > 0) {
