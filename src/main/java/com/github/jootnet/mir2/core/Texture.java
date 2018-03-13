@@ -143,7 +143,7 @@ public final class Texture implements Cloneable {
 	 * @return true表示当前图片为空，不可用于任何处理/绘制/序列化
 	 */
 	public final boolean empty() {
-		return this == EMPTY || pixels == null || pixels.length == 0 || width < 1 || height < 1;
+		return this == EMPTY || pixels == null || pixels.length == 0 || width <= 1 || height <= 1;
 	}
 
 	/**
