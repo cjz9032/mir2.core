@@ -7,7 +7,8 @@
 
 基于maven，可顺利使用gradle进行转换和构建
 
-加入了一个TiledMap导出工具类，到处后效果如下(gif较大，请等待加载)
+加入了一个TiledMap导出工具类，导出后效果如下(gif较大，请等待加载)
+
 ![TMX预览效果](https://github.com/jootnet/mir2.core/raw/master/src/test/java/mir2/core/tmx.gif)
 
 讨论Q群：35142661
