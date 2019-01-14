@@ -103,6 +103,18 @@ public final class BinaryReader extends RandomAccessFile {
 			throw new EOFException();
 		return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0));
 	}
+	
+	/**
+	 * 从流中读取一个四字节整形并以无符号方式返回 <br>
+	 * 流位置向前推进四个字节
+	 * 
+	 * @return 一个整形，以Little-Endian格式返回
+	 * @throws IOException
+	 *             文件已达到末尾
+	 */
+	public final long readUnsignedIntLE() throws IOException {
+		return ((long) (readIntLE()) & 0xFFFFFFFFL);
+	}
 
 	/**
 	 * 从流中读取一个八字节长整形 <br>
@@ -161,7 +173,7 @@ public final class BinaryReader extends RandomAccessFile {
 		if (n <= 0) {
 			return 0;
 		}
-		currentPos = getFilePointer();
+		currentPos = getFilePointer() + posInBuffer;
 		filelen = length();
 		newpos = currentPos + n;
 		if (newpos > filelen) {
@@ -170,7 +182,7 @@ public final class BinaryReader extends RandomAccessFile {
 
 		int len = (int) (newpos - currentPos);
 		int bufferReserv = bufferContentLen - posInBuffer; // 这里也有1~2个字节的误差，不过也懒得深究了
-		if (bufferReserv > len) {
+		if (bufferReserv >= len) {
 			// 目标地址命中预读！
 			posInBuffer += len;
 			return len;

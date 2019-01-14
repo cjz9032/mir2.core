@@ -63,9 +63,11 @@ public final class Maps {
 				Map ret = new Map();
 				ret.setWidth(br_map.readShortLE());
 				ret.setHeight(br_map.readShortLE());
-				br_map.skipBytes(24);
+				/*br_map.skipBytes(24);
 				boolean newMapFlag = br_map.readByte() == 2; // 新版地图每一个Tile占用14个字节，最后的两个字节作用未知
-				br_map.skipBytes(23);
+				br_map.skipBytes(23);*/
+				br_map.skipBytes(48);
+				int tileByteSize = (int) ((br_map.length() - 52) / ret.getWidth() / ret.getHeight());
 				MapTileInfo[][] mapTileInfos = new MapTileInfo[ret.getWidth()][ret.getHeight()];
 				for (int width = 0; width < ret.getWidth(); ++width)
 					for (int height = 0; height < ret.getHeight(); ++height) {
@@ -124,8 +126,16 @@ public final class Maps {
 							mi.setObjFileIdx((byte) (mi.getObjFileIdx() + 1));
 						// 读取光照(第12个byte)
 						mi.setLight(br_map.readByte());
-						if(newMapFlag)
-							br_map.skipBytes(2);
+						if(tileByteSize == 14) {
+							mi.setBngFileIdx(br_map.readByte());
+							if(mi.getBngFileIdx() != 0)
+								mi.setBngFileIdx((byte) (mi.getBngFileIdx() + 1));
+							mi.setMidFileIdx(br_map.readByte());
+							if(mi.getMidFileIdx() != 0)
+								mi.setMidFileIdx((byte) (mi.getMidFileIdx() + 1));
+						} else if(tileByteSize > 14) {
+							br_map.skipBytes(tileByteSize - 14);
+						}
 						if (width % 2 != 0 || height % 2 != 0)
 							mi.setHasBng(false);
 						mapTileInfos[width][height] = mi;

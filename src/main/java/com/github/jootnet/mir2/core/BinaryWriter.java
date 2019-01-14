@@ -46,6 +46,19 @@ public class BinaryWriter extends RandomAccessFile {
 		write((v >>> 0) & 0xFF);
         write((v >>> 8) & 0xFF);
 	}
+	
+	/**
+	 * 以低位在前(Little-Endian)的方式写入两个字节数据(一个无符号短整型数据)
+	 * 
+	 * @param v
+	 * 		要写入的unsigned short
+	 * @throws IOException
+	 * 		写入过程中发生的I/O异常
+	 */
+	public final void writeUnsignedShortLE(int v) throws IOException {
+		write((v >>> 0) & 0xFF);
+        write((v >>> 8) & 0xFF);
+	}
 
 	/**
 	 * 以低位在前(Little-Endian)的方式写入两个字节数据(一个char类型数据)

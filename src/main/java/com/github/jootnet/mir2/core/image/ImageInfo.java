@@ -27,11 +27,12 @@ public final class ImageInfo {
 	
 	ImageInfo() { }
 	
-	private short width;
-	private short height;
+	private int width;
+	private int height;
 	private short offsetX;
 	private short offsetY;	
 	private byte colorBit = 8;
+	boolean wzlCompressed = true;
 	
 	/**
 	 * 获取图片色深<br>
@@ -58,10 +59,10 @@ public final class ImageInfo {
 	 * 
 	 * @return 图片宽度,单位为像素
 	 */
-	public short getWidth() {
+	public int getWidth() {
 		return width;
 	}
-	void setWidth(short width) {
+	void setWidth(int width) {
 		this.width = width;
 	}
 
@@ -70,10 +71,10 @@ public final class ImageInfo {
 	 * 
 	 * @return 图片高度,单位为像素
 	 */
-	public short getHeight() {
+	public int getHeight() {
 		return height;
 	}
-	void setHeight(short height) {
+	void setHeight(int height) {
 		this.height = height;
 	}
 

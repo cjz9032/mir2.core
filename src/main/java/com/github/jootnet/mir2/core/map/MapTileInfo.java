@@ -57,6 +57,10 @@ public final class MapTileInfo {
 	private byte aniTick;
 	/** 资源文件索引 */
 	private byte objFileIdx;
+	/** 背景图资源文件索引 */
+	private byte bngFileIdx;
+	/** 中间层资源文件索引 */
+	private byte midFileIdx;
 	/** 光线 */
 	private byte light;
 	
@@ -199,6 +203,22 @@ public final class MapTileInfo {
 	/** 设置资源文件索引 */
 	void setObjFileIdx(byte objFileIdx) {
 		this.objFileIdx = objFileIdx;
+	}
+	/** 获取背景图资源文件索引 */
+	public byte getBngFileIdx() {
+		return bngFileIdx;
+	}
+	/** 设置背景图资源文件索引 */
+	public void setBngFileIdx(byte bngFileIdx) {
+		this.bngFileIdx = bngFileIdx;
+	}
+	/** 获取中间层资源文件索引 */
+	public byte getMidFileIdx() {
+		return midFileIdx;
+	}
+	/** 设置中间层资源文件索引 */
+	public void setMidFileIdx(byte midFileIdx) {
+		this.midFileIdx = midFileIdx;
 	}
 	/** 获取亮度 */
 	public byte getLight() {

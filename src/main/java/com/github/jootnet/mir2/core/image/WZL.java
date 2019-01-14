@@ -45,7 +45,7 @@ final class WZL implements ImageLibrary {
 		return imageCount;
 	}
     /* 图片数据起始位置 */
-    private int[] offsetList;
+    private long[] offsetList;
     /* 图片数据长度 */
     private int[] lengthList;
     private ImageInfo[] imageInfos;
@@ -85,20 +85,20 @@ final class WZL implements ImageLibrary {
     		BinaryReader br_wzx = new BinaryReader(f_wzx);
     		br_wzx.skipBytes(44); // 跳过标题
     		imageCount = br_wzx.readIntLE();
-			offsetList = new int[imageCount];
+			offsetList = new long[imageCount];
 			for (int i = 0; i < imageCount; ++i)
 			{
 				// 读取数据偏移地址
-				offsetList[i] = br_wzx.readIntLE();
+				offsetList[i] = br_wzx.readUnsignedIntLE();
 			}
 			br_wzx.close();
 			br_wzl = new BinaryReader(f_wzl);
 			imageInfos = new ImageInfo[imageCount];
             lengthList = new int[imageCount];
             for (int i = 0; i < imageCount; ++i) {
-            	int offset = offsetList[i];
-            	if(offset < 48) {
-            		// WZL里offset为0的是空图片
+            	long offset = offsetList[i];
+            	if(offset <= 48) {
+            		// WZL里offset小于64的是空图片
 					imageInfos[i] = ImageInfo.EMPTY;
             		continue;
             	}
@@ -111,13 +111,14 @@ final class WZL implements ImageLibrary {
                 ImageInfo ii = new ImageInfo();
                 br_wzl.seek(offset);
                 ii.setColorBit((byte) (br_wzl.readByte() == 5 ? 16 : 8));
-                br_wzl.skipBytes(3); // 跳过3字节未知数据
-                ii.setWidth((short)br_wzl.readUnsignedShortLE());
-				ii.setHeight((short)br_wzl.readUnsignedShortLE());
+                ii.wzlCompressed = br_wzl.readByte() != 0;
+                br_wzl.skipBytes(2); // 跳过2字节未知数据
+                ii.setWidth(br_wzl.readUnsignedShortLE());
+				ii.setHeight(br_wzl.readUnsignedShortLE());
 				ii.setOffsetX(br_wzl.readShortLE());
 				ii.setOffsetY(br_wzl.readShortLE());
                 imageInfos[i] = ii;
-                lengthList[i] = br_wzl.readIntLE();
+                lengthList[i] = (int) br_wzl.readUnsignedIntLE();
             }
             loaded = true;
 		} catch (Exception e) {
@@ -164,21 +165,20 @@ final class WZL implements ImageLibrary {
 		if(lengthList[index] == 0) return Texture.EMPTY;
     	try{
     		ImageInfo ii = imageInfos[index];
-    		int offset = offsetList[index];
+    		long offset = offsetList[index];
     		int length = lengthList[index];
     		byte[] pixels = new byte[length];
     		synchronized (wzl_locker) {
         		br_wzl.seek(offset + 16);
         		br_wzl.read(pixels);
 			}
-    		pixels = unzip(pixels);
+    		if(ii.wzlCompressed)
+    			pixels = unzip(pixels);
     		byte[] sRGB = new byte[ii.getWidth() * ii.getHeight() * 3];
-    		if (ii.getColorBit() == 8)
-            {
+    		if (ii.getColorBit() == 8) {
                 int p_index = 0;
                 for (int h = ii.getHeight() - 1; h >= 0; --h)
-                    for (int w = 0; w < ii.getWidth(); ++w)
-                    {
+                    for (int w = 0; w < ii.getWidth(); ++w) {
                         // 跳过填充字节
                         if (w == 0)
                             p_index += SDK.skipBytes(8, ii.getWidth());
@@ -189,14 +189,12 @@ final class WZL implements ImageLibrary {
     					sRGB[_idx + 2] = pallete[3];
                     }
             }
-	    	else if (ii.getColorBit() == 16)
-            {
+	    	else if (ii.getColorBit() == 16) {
 	    		ByteBuffer bb = ByteBuffer.wrap(pixels);
 	    		bb.order(ByteOrder.LITTLE_ENDIAN);
 	    		int p_index = 0;
                 for (int h = ii.getHeight() - 1; h >= 0; --h)
-                    for (int w = 0; w < ii.getWidth(); ++w, p_index += 2)
-                    {
+                    for (int w = 0; w < ii.getWidth(); ++w, p_index += 2) {
                         // 跳过填充字节
                         if (w == 0)
                             p_index += SDK.skipBytes(16, ii.getWidth());

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -97,16 +98,34 @@ public class TiledMapExporter {
 	
 	static void exportTmx(String dir, String mapName, Map map) throws IOException {
 		if(new File(dir, mapName + ".tsx").exists()) return; // XXX
-		// 看用到了哪些Obj
-		int[] objGIDOffsets = new int[100];
-		int objUseCount = 2; // 因为有SmTiles和Tiles
+		int gidx = 0; // 素材索引
+		// tiles
+		int[] tileGIDOffsets = new int[1000];
+		for(int h = 0; h < map.getHeight(); h += 2) {
+			for(int w = 0; w < map.getWidth(); w += 2) {
+				MapTileInfo mti = map.getTiles()[w][h];
+				if(mti.isHasBng()) {
+					if(tileGIDOffsets[mti.getBngFileIdx()] == 0) tileGIDOffsets[mti.getBngFileIdx()] = gidx++ * 32767 + 1;
+				}
+			}
+		}
+		// smtiles
+		int[] smTileGIDOffsets = new int[1000];
+		for(int h = 0; h < map.getHeight(); ++h) {
+			for(int w = 0; w < map.getWidth(); ++w) {
+				MapTileInfo mti = map.getTiles()[w][h];
+				if(mti.isHasMid()) {
+					if(smTileGIDOffsets[mti.getMidFileIdx()] == 0) smTileGIDOffsets[mti.getMidFileIdx()] = gidx++ * 32767 + 1;
+				}
+			}
+		}		
+		// objs
+		int[] objGIDOffsets = new int[1000];
 		for(int h = 0; h < map.getHeight(); ++h) {
 			for(int w = 0; w < map.getWidth(); ++w) {
 				MapTileInfo mti = map.getTiles()[w][h];
 				if(mti.isHasObj()) {
-					if(objGIDOffsets[mti.getObjFileIdx()] == 0) {
-						objGIDOffsets[mti.getObjFileIdx()] = objUseCount++ * 32767 + 1;
-					}
+					if(objGIDOffsets[mti.getObjFileIdx()] == 0) objGIDOffsets[mti.getObjFileIdx()] = gidx++ * 32767 + 1;
 				}
 			}
 		}
@@ -119,15 +138,37 @@ public class TiledMapExporter {
 			.append(map.getHeight())
 			.append("\" tilewidth=\"48\" tileheight=\"32\" infinite=\"0\" nextobjectid=\"1\">");
 		tmxXml.append(LINE_SEPARATOR);
-		tmxXml.append(" <tileset firstgid=\"1\" source=\"Tiles.tsx\"/>");
-		tmxXml.append(LINE_SEPARATOR);
-		tmxXml.append(" <tileset firstgid=\"32768\" source=\"SmTiles.tsx\"/>"); // 预设每个TSX有32767张图，浪费空间我不怕
-		tmxXml.append(LINE_SEPARATOR);
-		for(int i = 0; i < 100; ++i) {
+		for(int i = 0; i < tileGIDOffsets.length; ++i) {
+			if(tileGIDOffsets[i] != 0) {
+				tmxXml.append(" <tileset firstgid=\"")
+					.append(tileGIDOffsets[i])
+					.append("\" source=\"tiles");
+				if(i != 0)
+					tmxXml.append(i);
+				tmxXml.append(".tsx\"/>");
+				tmxXml.append(LINE_SEPARATOR);
+			}
+		}
+		for(int i = 0; i < smTileGIDOffsets.length; ++i) {
+			if(smTileGIDOffsets[i] != 0) {
+				tmxXml.append(" <tileset firstgid=\"")
+					.append(smTileGIDOffsets[i])
+					.append("\" source=\"smtiles");
+				if(i != 0)
+					tmxXml.append(i);
+				tmxXml.append(".tsx\"/>");
+				tmxXml.append(LINE_SEPARATOR);
+			}
+		}
+		//tmxXml.append(" <tileset firstgid=\"1\" source=\"Tiles.tsx\"/>");
+		//tmxXml.append(LINE_SEPARATOR);
+		//tmxXml.append(" <tileset firstgid=\"32768\" source=\"SmTiles.tsx\"/>"); // 预设每个TSX有32767张图，浪费空间我不怕
+		//tmxXml.append(LINE_SEPARATOR);
+		for(int i = 0; i < objGIDOffsets.length; ++i) {
 			if(objGIDOffsets[i] != 0) {
 				tmxXml.append(" <tileset firstgid=\"")
 					.append(objGIDOffsets[i])
-					.append("\" source=\"Objects");
+					.append("\" source=\"objects");
 				if(i != 0)
 					tmxXml.append(i);
 				tmxXml.append(".tsx\"/>");
@@ -151,7 +192,7 @@ public class TiledMapExporter {
 			for(int w = 0; w < map.getWidth(); ++w) {
 				MapTileInfo mti = map.getTiles()[w][h - 1];
 				if(mti.isHasBng()) {
-					tmxXml.append(mti.getBngImgIdx() + 1);
+					tmxXml.append(mti.getBngImgIdx()  + tileGIDOffsets[mti.getBngFileIdx()]);
 				} else {
 					tmxXml.append("0");
 				}
@@ -177,7 +218,7 @@ public class TiledMapExporter {
 			for(int w = 0; w < map.getWidth(); ++w) {
 				MapTileInfo mti = map.getTiles()[w][h];
 				if(mti.isHasMid()) {
-					tmxXml.append(mti.getMidImgIdx() + 32768);
+					tmxXml.append(mti.getMidImgIdx() + smTileGIDOffsets[mti.getMidFileIdx()]);
 				} else {
 					tmxXml.append("0");
 				}
@@ -222,26 +263,27 @@ public class TiledMapExporter {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		String OUT_DIR = "C:\\Users\\云\\Desktop\\M2";
-		String DATA_DIR = "D:\\Program Files (x86)\\盛大网络\\热血传奇\\Data\\";
+		String OUT_DIR = "F:\\temp\\M2";
+		String DATA_DIR = "D:\\Program Files (x86)\\盛大游戏\\Legend of mir\\data\\";
 		
-		ImageLibrary il_tiles = ImageLibraries.get("Tiles", DATA_DIR + "Tiles");
-		exportTsx(OUT_DIR, "Tiles", il_tiles);
-		ImageLibrary il_smTiles = ImageLibraries.get("SmTiles", DATA_DIR + "SmTiles");
-		exportTsx(OUT_DIR, "SmTiles", il_smTiles);
-		for(int i = 0; i < 100; ++i) {
-			String ilName = "Objects";
-			if(i != 0)
-				ilName += i;
-			ImageLibrary il_obj = ImageLibraries.get(ilName, DATA_DIR + ilName);
-			if(il_obj != null)
-				exportTsx(OUT_DIR, ilName, il_obj);
-		}
+		Arrays.stream(new File(DATA_DIR).list((f, _fn) ->
+				(_fn.toLowerCase().startsWith("tiles") || _fn.toLowerCase().startsWith("smtiles") || _fn.toLowerCase().startsWith("objects")) &&
+				(_fn.toLowerCase().endsWith("wzl") || _fn.toLowerCase().endsWith("wil") || _fn.toLowerCase().endsWith("wis")))).parallel().forEach(fn -> {
+			fn = fn.substring(0, fn.length() - 4).toLowerCase();
+			ImageLibrary il_tiles = ImageLibraries.get(fn, DATA_DIR + fn);
+			try {
+				exportTsx(OUT_DIR, fn, il_tiles);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 		
-		exportTmx(OUT_DIR, "0", Maps.get("0", "D:\\Program Files (x86)\\盛大网络\\热血传奇\\Map\\0.map"));
-		exportTmx(OUT_DIR, "1", Maps.get("1", "D:\\Program Files (x86)\\盛大网络\\热血传奇\\Map\\1.map"));
-		exportTmx(OUT_DIR, "2", Maps.get("2", "D:\\Program Files (x86)\\盛大网络\\热血传奇\\Map\\2.map"));
-		exportTmx(OUT_DIR, "3", Maps.get("3", "D:\\Program Files (x86)\\盛大网络\\热血传奇\\Map\\3.map"));
+		exportTmx(OUT_DIR, "0", Maps.get("0", "D:\\Program Files (x86)\\盛大游戏\\Legend of mir\\Map\\0.map"));
+		exportTmx(OUT_DIR, "1", Maps.get("1", "D:\\Program Files (x86)\\盛大游戏\\Legend of mir\\Map\\1.map"));
+		exportTmx(OUT_DIR, "2", Maps.get("2", "D:\\Program Files (x86)\\盛大游戏\\Legend of mir\\Map\\2.map"));
+		exportTmx(OUT_DIR, "3", Maps.get("3", "D:\\Program Files (x86)\\盛大游戏\\Legend of mir\\Map\\3.map"));
+		exportTmx(OUT_DIR, "bsr02", Maps.get("bsr02", "D:\\Program Files (x86)\\盛大游戏\\Legend of mir\\Map\\bsr02.map"));
 	}
 
 }

@@ -518,8 +518,8 @@ public final class WIL implements WriteableImageLibrary {
 			for (int i = 0; i < imageInfos.length; ++i) {
 				bw_wix.writeIntLE(lastOffset);
 				lastOffset += 8;
-				bw_wil.writeShortLE(imageInfos[i].getWidth() < 1 ? 1 : imageInfos[i].getWidth());
-				bw_wil.writeShortLE(imageInfos[i].getHeight() < 1 ? 1 : imageInfos[i].getHeight());
+				bw_wil.writeUnsignedShortLE(imageInfos[i].getWidth() < 1 ? 1 : imageInfos[i].getWidth());
+				bw_wil.writeUnsignedShortLE(imageInfos[i].getHeight() < 1 ? 1 : imageInfos[i].getHeight());
 				bw_wil.writeShortLE(imageInfos[i].getOffsetX());
 				bw_wil.writeShortLE(imageInfos[i].getOffsetY());
 				if (imageInfos[i] == ImageInfo.EMPTY
