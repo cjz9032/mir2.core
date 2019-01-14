@@ -683,14 +683,16 @@ public final class Texture implements Cloneable {
 	 * 将一副目标图像混合到当前图像上<br>
 	 * 使用Overlay的图像叠加方式<br>
 	 * 即显卡的Add混合模式，在OpenGL里是glBlendFunc(GL_SRC_COLOR, GL_ONE)<br>
-	 * 如果需要使用普通方式，则使用{@link #blendNormal(Texture, Point, float)}方式<br>
+	 * 如果需要使用普通方式，则使用{@link #blendNormal(Texture, int, int, float)}方式<br>
 	 * 如需支持透明色，则使用{@link #blendNormalTransparent(Texture, int, int, float, byte, byte, byte)}
 	 * 此操作不改变目标图像数据，即使传递了alpha参数
 	 * 
 	 * @param tar
 	 * 		目标图像
-	 * @param loc
-	 * 		图像叠加起始坐标
+	 * @param locx
+	 * 		图像叠加起始坐标x
+	 * @param locy
+	 * 		图像叠加起始坐标y
 	 * 
 	 * @see #blendNormal(Texture, int, int, float)
 	 * @see #blendNormalTransparent(Texture, int, int, float, byte, byte, byte)
@@ -810,8 +812,10 @@ public final class Texture implements Cloneable {
 	 * 
 	 * @param tar
 	 * 		目标图像
-	 * @param loc
-	 * 		图像叠加起始坐标
+	 * @param locx
+	 *            图像叠加起始X坐标
+	 * @param locy
+	 *            图像叠加起始Y坐标
 	 * @param r
 	 * 		透明色R分量
 	 * @param g
