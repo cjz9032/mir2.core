@@ -35,7 +35,7 @@ import com.github.jootnet.mir2.core.BinaryReader;
   end;
  * </pre>
  * 十周年之后的版本可能出现新版本地图，3KM2中式20110428加入的对新版地图的支持<br>
- * 不过除了问陈天桥之外暂时不能知道新版地图中最后两个字节是干嘛用的
+ * 新版本地图每个块儿有14字节或更多，上文中VerFlag也不一定为2，因此本文中十分暴力地将新地图块儿只用14个字节；并用文件大小除以地图宽高算块儿字节数
  * 
  * @author 云中双月
  */
@@ -63,9 +63,6 @@ public final class Maps {
 				Map ret = new Map();
 				ret.setWidth(br_map.readShortLE());
 				ret.setHeight(br_map.readShortLE());
-				/*br_map.skipBytes(24);
-				boolean newMapFlag = br_map.readByte() == 2; // 新版地图每一个Tile占用14个字节，最后的两个字节作用未知
-				br_map.skipBytes(23);*/
 				br_map.skipBytes(48);
 				int tileByteSize = (int) ((br_map.length() - 52) / ret.getWidth() / ret.getHeight());
 				MapTileInfo[][] mapTileInfos = new MapTileInfo[ret.getWidth()][ret.getHeight()];
