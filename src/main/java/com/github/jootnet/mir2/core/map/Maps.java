@@ -63,6 +63,10 @@ public final class Maps {
 				Map ret = new Map();
 				ret.setWidth(br_map.readShortLE());
 				ret.setHeight(br_map.readShortLE());
+
+//				short temp=  br_map.readShortLE();
+//				String a = Short.toString(temp);
+
 				br_map.skipBytes(48);
 				int tileByteSize = (int) ((br_map.length() - 52) / ret.getWidth() / ret.getHeight());
 				MapTileInfo[][] mapTileInfos = new MapTileInfo[ret.getWidth()][ret.getHeight()];
@@ -112,13 +116,18 @@ public final class Maps {
 						if((btTmp & 0x7F) > 0) {
 							mi.setAniFrame((byte) (btTmp & 0x7F));
 							mi.setHasAni(true);
-							mi.setHasObj(false);
+//							mi.setHasObj(true);
 							mi.setAniBlendMode((btTmp & 0x80) == 0x80);
 						}
 						// 读取并设置动画跳帧数(第10个byte)
 						mi.setAniTick(br_map.readByte());
 						// 读取资源文件索引(第11个byte)
-						mi.setObjFileIdx(br_map.readByte());
+
+						byte temp = br_map.readByte();
+						if(temp != 0){
+
+						}
+						mi.setObjFileIdx(temp);
 						if(mi.getObjFileIdx() != 0)
 							mi.setObjFileIdx((byte) (mi.getObjFileIdx() + 1));
 						// 读取光照(第12个byte)
