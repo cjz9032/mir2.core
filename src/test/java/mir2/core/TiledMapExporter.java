@@ -27,7 +27,8 @@ import com.github.jootnet.mir2.core.map.Maps;
 public class TiledMapExporter {
 
     static String OUT_DIR = "F:\\temp\\M2";
-    static String DATA_DIR = "D:\\10-mir2\\client\\Data\\";
+    static String DATA_DIR = "F:\\mirall\\176client\\Data\\";
+    static String DATA_MAP = "F:\\mirall\\176client\\MAP\\";
 
     static String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -130,8 +131,15 @@ public class TiledMapExporter {
             for (int w = 0; w < map.getWidth(); ++w) {
                 MapTileInfo mti = map.getTiles()[w][h];
                 if (mti.isHasObj()) {
-                    if (objGIDOffsets[mti.getObjFileIdx()] == 0)
-                        objGIDOffsets[mti.getObjFileIdx()] = gidx++ * 32767 + 1;
+                    int a = mti.getObjFileIdx();
+                    if(a < 0){
+                                System.out.println(                        mapName + ':'+'h'+','+w+'-'+a);
+                        a = 0;
+                        // throw new Error("error");
+                    }
+
+                    if (objGIDOffsets[a] == 0)
+                        objGIDOffsets[a] = gidx++ * 32767 + 1;
                 }
             }
         }
@@ -256,7 +264,7 @@ public class TiledMapExporter {
             for (int w = 0; w < map.getWidth(); ++w) {
                 MapTileInfo mti = map.getTiles()[w][h];
                 if (mti.isHasObj() && !mti.isHasAni()) {
-                    tmxXml.append(mti.getObjImgIdx() + objGIDOffsets[mti.getObjFileIdx()]);
+                    tmxXml.append(mti.getObjImgIdx() + objGIDOffsets[mti.getObjFileIdx() < 0 ? 0 : mti.getObjFileIdx()]);
                 } else {
                     tmxXml.append("0");
                 }
@@ -372,10 +380,21 @@ public class TiledMapExporter {
 			}
 		});
 
-//		exportTmx(OUT_DIR, "0106", Maps.get("0106", "D:\\10-mir2\\client\\Map\\0106.map"));
-        exportTmx(OUT_DIR, "0", Maps.get("0", "D:\\10-mir2\\client\\Map\\0.map"));
-		exportTmx(OUT_DIR, "2", Maps.get("2", "D:\\10-mir2\\client\\Map\\2.map"));
-		exportTmx(OUT_DIR, "3", Maps.get("3", "D:\\10-mir2\\client\\Map\\3.map"));
+        Arrays.stream(new File(DATA_MAP).list((f, _fn) ->(_fn.endsWith(".map")))).parallel().forEach(fn -> {
+			String name = fn.substring(0, fn.length() - 4);
+			try {
+                exportTmx(OUT_DIR, name, Maps.get(name,  DATA_MAP + fn));
+
+            } catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+
+//		exportTmx(OUT_DIR, "T118", Maps.get("T118", "D:\\10-mir2\\client\\Map\\T118.map"));
+//        exportTmx(OUT_DIR, "0", Maps.get("0", "F:\\mirall\\176client\\Map\\0.map"));
+//		exportTmx(OUT_DIR, "2", Maps.get("2", "F:\\mirall\\176client\\Map\\2.map"));
+//		exportTmx(OUT_DIR, "3", Maps.get("3", "F:\\mirall\\176client\\Map\\3.map"));
 //		exportTmx(OUT_DIR, "bsr02", Maps.get("bsr02", "D:\10-mir2\client\Map\\bsr02.map"));
     }
 
