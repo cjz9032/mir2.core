@@ -193,7 +193,7 @@ public class TiledMapExporter {
         }
         int cllisionGid = gidx++ * 32767 + 1;
         tmxXml.append(" <tileset firstgid=\"" + (cllisionGid) + "\" name=\"collision\" tilewidth=\"48\" tileheight=\"32\" tilecount=\"1\">\n" +
-                "  <image source=\"./collision-tile.png\" trans=\"000000\" width=\"48\" height=\"32\"/>\n" +
+                "  <image source=\"collision-tile.png\" trans=\"000000\" width=\"48\" height=\"32\"/>\n" +
                 " </tileset>");
 
         tmxXml.append(" <layer name=\"base\" width=\"")
