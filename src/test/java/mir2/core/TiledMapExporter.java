@@ -26,8 +26,8 @@ import com.github.jootnet.mir2.core.map.Maps;
  */
 public class TiledMapExporter {
 
-    static String OUT_DIR = "F:\\temp\\M2";
-    static String DATA_DIR = "F:\\mirall\\176client\\Data\\";
+    static String OUT_DIR = "F:\\temp\\M3";
+    static String DATA_DIR = "D:\\XX\\Data\\";
     static String DATA_MAP = "F:\\mirall\\176client\\MAP\\";
 
     static String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -368,7 +368,7 @@ public class TiledMapExporter {
     public static void main(String[] args) throws IOException {
 
 		Arrays.stream(new File(DATA_DIR).list((f, _fn) ->
-				(_fn.toLowerCase().startsWith("tiles") || _fn.toLowerCase().startsWith("smtiles") || _fn.toLowerCase().startsWith("objects")) &&
+				(_fn.toLowerCase().startsWith("npc")) &&
 				(_fn.toLowerCase().endsWith("wzl") || _fn.toLowerCase().endsWith("wil") || _fn.toLowerCase().endsWith("wis")))).parallel().forEach(fn -> {
 			fn = fn.substring(0, fn.length() - 4).toLowerCase();
 			ImageLibrary il_tiles = ImageLibraries.get(fn, DATA_DIR + fn);
@@ -380,16 +380,16 @@ public class TiledMapExporter {
 			}
 		});
 
-        Arrays.stream(new File(DATA_MAP).list((f, _fn) ->(_fn.endsWith(".map")))).parallel().forEach(fn -> {
-			String name = fn.substring(0, fn.length() - 4);
-			try {
-                exportTmx(OUT_DIR, name, Maps.get(name,  DATA_MAP + fn));
-
-            } catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+//        Arrays.stream(new File(DATA_MAP).list((f, _fn) ->(_fn.endsWith(".map")))).parallel().forEach(fn -> {
+//			String name = fn.substring(0, fn.length() - 4);
+//			try {
+//                exportTmx(OUT_DIR, name, Maps.get(name,  DATA_MAP + fn));
+//
+//            } catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		});
 
 //		exportTmx(OUT_DIR, "T118", Maps.get("T118", "D:\\10-mir2\\client\\Map\\T118.map"));
 //        exportTmx(OUT_DIR, "0", Maps.get("0", "F:\\mirall\\176client\\Map\\0.map"));
