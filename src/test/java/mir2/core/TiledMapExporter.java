@@ -26,9 +26,10 @@ import com.github.jootnet.mir2.core.map.Maps;
  */
 public class TiledMapExporter {
 
-    static String OUT_DIR = "F:\\temp\\M3";
-    static String DATA_DIR = "D:\\XX\\Data\\";
-    static String DATA_MAP = "F:\\mirall\\176client\\MAP\\";
+    static String OUT_DIR = "E:\\temp\\M3";
+    static String DATA_DIR = "E:\\176\\Data\\";
+    static String DATA_MAP = "E:\\176\\Map\\";
+//static String DATA_DIR = "D:\\10-mir2\\client\\Data\\";
 
     static String LINE_SEPARATOR = System.getProperty("line.separator");
 
@@ -110,7 +111,7 @@ public class TiledMapExporter {
                 MapTileInfo mti = map.getTiles()[w][h];
                 if (mti.isHasBng()) {
                     if (tileGIDOffsets[mti.getBngFileIdx()] == 0)
-                        tileGIDOffsets[mti.getBngFileIdx()] = gidx++ * 32767 + 1;
+                        tileGIDOffsets[mti.getBngFileIdx()] = gidx++ * 62767 + 1;
                 }
             }
         }
@@ -121,7 +122,7 @@ public class TiledMapExporter {
                 MapTileInfo mti = map.getTiles()[w][h];
                 if (mti.isHasMid()) {
                     if (smTileGIDOffsets[mti.getMidFileIdx()] == 0)
-                        smTileGIDOffsets[mti.getMidFileIdx()] = gidx++ * 32767 + 1;
+                        smTileGIDOffsets[mti.getMidFileIdx()] = gidx++ * 62767 + 1;
                 }
             }
         }
@@ -139,7 +140,7 @@ public class TiledMapExporter {
                     }
 
                     if (objGIDOffsets[a] == 0)
-                        objGIDOffsets[a] = gidx++ * 32767 + 1;
+                        objGIDOffsets[a] = gidx++ * 62767 + 1;
                 }
             }
         }
@@ -368,28 +369,29 @@ public class TiledMapExporter {
     public static void main(String[] args) throws IOException {
 
 		Arrays.stream(new File(DATA_DIR).list((f, _fn) ->
-				(_fn.toLowerCase().startsWith("npc")) &&
-				(_fn.toLowerCase().endsWith("wzl") || _fn.toLowerCase().endsWith("wil") || _fn.toLowerCase().endsWith("wis")))).parallel().forEach(fn -> {
+				(!_fn.toLowerCase().startsWith("weapon.")) &&
+				(_fn.toLowerCase().endsWith("wzl") || _fn.toLowerCase().endsWith("wil") || _fn.toLowerCase().endsWith("wixxx")))).parallel().forEach(fn -> {
 			fn = fn.substring(0, fn.length() - 4).toLowerCase();
-			ImageLibrary il_tiles = ImageLibraries.get(fn, DATA_DIR + fn);
 			try {
-				exportTsx(OUT_DIR, fn, il_tiles);
+                ImageLibrary il_tiles = ImageLibraries.get(fn, DATA_DIR + fn);
+
+                exportTsx(OUT_DIR, fn, il_tiles);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		});
 
-//        Arrays.stream(new File(DATA_MAP).list((f, _fn) ->(_fn.endsWith(".map")))).parallel().forEach(fn -> {
-//			String name = fn.substring(0, fn.length() - 4);
-//			try {
-//                exportTmx(OUT_DIR, name, Maps.get(name,  DATA_MAP + fn));
-//
-//            } catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		});
+        Arrays.stream(new File(DATA_MAP).list((f, _fn) ->(_fn.endsWith(".map")))).parallel().forEach(fn -> {
+			String name = fn.substring(0, fn.length() - 4);
+			try {
+                exportTmx(OUT_DIR, name, Maps.get(name,  DATA_MAP + fn));
+
+            } catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 
 //		exportTmx(OUT_DIR, "T118", Maps.get("T118", "D:\\10-mir2\\client\\Map\\T118.map"));
 //        exportTmx(OUT_DIR, "0", Maps.get("0", "F:\\mirall\\176client\\Map\\0.map"));

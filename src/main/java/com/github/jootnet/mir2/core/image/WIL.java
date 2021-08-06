@@ -1,11 +1,10 @@
+
 /*
  * Copyright 2017 JOOTNET Project
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +30,7 @@ import com.github.jootnet.mir2.core.Texture;
 
 /**
  * 热血传奇2WIL图片库
- * 
+ *
  * @author 云中双月
  */
 public final class WIL implements WriteableImageLibrary {
@@ -199,7 +198,7 @@ public final class WIL implements WriteableImageLibrary {
 
 	/**
 	 * 获取库中图片数量
-	 * 
+	 *
 	 * @return 存在于当前WIL库中的图片数量
 	 */
 	int getImageCount() {
@@ -215,7 +214,7 @@ public final class WIL implements WriteableImageLibrary {
 
 	/**
 	 * 获取库中图片信息数组
-	 * 
+	 *
 	 * @return 所有存在于当前WIL库中的图片信息数组
 	 */
 	ImageInfo[] getImageInfos() {
@@ -230,7 +229,7 @@ public final class WIL implements WriteableImageLibrary {
 
 	/**
 	 * 获取库加载状态
-	 * 
+	 *
 	 * @return true表示库加载成功 false表示加载失败
 	 */
 	public boolean isLoaded() {
@@ -362,7 +361,7 @@ public final class WIL implements WriteableImageLibrary {
 	/**
 	 * 关闭WIL对象，释放其引用的文件流以及内存占用
 	 */
-	public synchronized final void close() throws IOException {
+	public final void close() throws IOException {
 		offsetList = null;
 		imageInfos = null;
 		loaded = false;
@@ -401,7 +400,7 @@ public final class WIL implements WriteableImageLibrary {
 					br_wil.seek(offsetList[index] + 8);
 					int pixelLength = offsetList[index + 1] - offsetList[index];
 					pixels = new byte[pixelLength - 8];
-					br_wil.readFully(pixels);
+					br_wil.read(pixels);
 					if (pixels.length == 1) {
 						// 空白图片
 						byte[] sRGB = new byte[3];
@@ -463,13 +462,13 @@ public final class WIL implements WriteableImageLibrary {
 		return imageInfos[index];
 	}
 
-	public synchronized int count() {
+	public int count() {
 		return imageCount;
 	}
 
 	/**
 	 * 创建新的库文件
-	 * 
+	 *
 	 * @param libName
 	 *            文件名
 	 * @return 空的可读写的图片库对象
@@ -485,7 +484,7 @@ public final class WIL implements WriteableImageLibrary {
 		return wil;
 	}
 
-	public synchronized void save(String dir) {
+	public void save(String dir) {
 		if (!loaded)
 			return;
 		if (tmp_wil_dir == null)
@@ -548,7 +547,7 @@ public final class WIL implements WriteableImageLibrary {
 						br_wil.seek(offsetList[i] + 8);
 						int pixelLength = offsetList[i + 1] - offsetList[i];
 						byte[] pixels = new byte[pixelLength - 8];
-						br_wil.readFully(pixels);
+						br_wil.read(pixels);
 						bw_wil.write(pixels);
 					}
 				}
@@ -593,7 +592,7 @@ public final class WIL implements WriteableImageLibrary {
 	}
 
 	public synchronized void tex(int index, byte[] rgbs, int colorBit, int width, int height, int offsetX,
-			int offsetY) {
+								 int offsetY) {
 		if (rgbs == null || rgbs.length != width * height * 3 || rgbs.length != width * height * 4)
 			return;
 		try {
@@ -643,7 +642,7 @@ public final class WIL implements WriteableImageLibrary {
 	}
 
 	public synchronized void tex(int index, byte[][] pallete, byte[] rgb8s, int width, int height, int offsetX,
-			int offsetY) {
+								 int offsetY) {
 		if (rgb8s == null || rgb8s.length != width * height || rgb8s.length != SDK.widthBytes(8 * width) * height)
 			return;
 		try {
