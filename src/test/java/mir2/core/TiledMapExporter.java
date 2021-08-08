@@ -3,6 +3,7 @@ package mir2.core;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -27,8 +28,8 @@ import com.github.jootnet.mir2.core.map.Maps;
 public class TiledMapExporter {
 
     static String OUT_DIR = "E:\\temp\\M3";
-    static String DATA_DIR = "E:\\176\\Data\\";
-    static String DATA_MAP = "E:\\176\\Map\\";
+    static String DATA_DIR = "E:\\177\\Data\\";
+    static String DATA_MAP = "E:\\177\\Map\\";
 //static String DATA_DIR = "D:\\10-mir2\\client\\Data\\";
 
     static String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -193,9 +194,9 @@ public class TiledMapExporter {
             }
         }
         int cllisionGid = gidx++ * 32767 + 1;
-        tmxXml.append(" <tileset firstgid=\"" + (cllisionGid) + "\" name=\"collision\" tilewidth=\"48\" tileheight=\"32\" tilecount=\"1\">\n" +
-                "  <image source=\"collision-tile.png\" trans=\"000000\" width=\"48\" height=\"32\"/>\n" +
-                " </tileset>");
+//        tmxXml.append(" <tileset firstgid=\"" + (cllisionGid) + "\" name=\"collision\" tilewidth=\"48\" tileheight=\"32\" tilecount=\"1\">\n" +
+//                "  <image source=\"collision-tile.png\" trans=\"000000\" width=\"48\" height=\"32\"/>\n" +
+//                " </tileset>");
 
         tmxXml.append(" <layer name=\"base\" width=\"")
                 .append(map.getWidth())
@@ -280,107 +281,112 @@ public class TiledMapExporter {
 
         tmxXml.append(LINE_SEPARATOR);
         // collision
-        tmxXml.append(" <layer name=\"Collisions\" width=\"")
-                .append(map.getWidth())
-                .append("\" height=\"")
-                .append(map.getHeight())
-                .append("\" ")
-                .append("opacity=\"0.2\"")
-                .append(">");
-        tmxXml.append(LINE_SEPARATOR);
-        tmxXml.append("  <data encoding=\"csv\">");
-        tmxXml.append(LINE_SEPARATOR);
-        for (int h = 0; h < map.getHeight(); ++h) {
-            for (int w = 0; w < map.getWidth(); ++w) {
-                MapTileInfo mti = map.getTiles()[w][h];
-                if (!mti.isCanWalk()) {
-                    tmxXml.append(cllisionGid);
-                } else {
-                    tmxXml.append("0");
-                }
-                if (w != map.getWidth() - 1 || h != map.getHeight() - 1)
-                    tmxXml.append(",");
-            }
-            tmxXml.append(LINE_SEPARATOR);
-        }
-        tmxXml.append("  </data>");
-        tmxXml.append(LINE_SEPARATOR);
-        tmxXml.append(" </layer>");
+//        tmxXml.append(" <layer name=\"Collisions\" width=\"")
+//                .append(map.getWidth())
+//                .append("\" height=\"")
+//                .append(map.getHeight())
+//                .append("\" ")
+//                .append("opacity=\"0.2\"")
+//                .append(">");
+//        tmxXml.append(LINE_SEPARATOR);
+//        tmxXml.append("  <data encoding=\"csv\">");
+//        tmxXml.append(LINE_SEPARATOR);
+//        for (int h = 0; h < map.getHeight(); ++h) {
+//            for (int w = 0; w < map.getWidth(); ++w) {
+//                MapTileInfo mti = map.getTiles()[w][h];
+//                if (!mti.isCanWalk()) {
+//                    tmxXml.append(cllisionGid);
+//                } else {
+//                    tmxXml.append("0");
+//                }
+//                if (w != map.getWidth() - 1 || h != map.getHeight() - 1)
+//                    tmxXml.append(",");
+//            }
+//            tmxXml.append(LINE_SEPARATOR);
+//        }
+//        tmxXml.append("  </data>");
+//        tmxXml.append(LINE_SEPARATOR);
+//        tmxXml.append(" </layer>");
 
 
         tmxXml.append("</map>");
         // ani
         tmxXml.append(LINE_SEPARATOR);
 
-        tmxXml.append("<custom>");
-        tmxXml.append(LINE_SEPARATOR);
+//        tmxXml.append("<custom>");
+//        tmxXml.append(LINE_SEPARATOR);
+//
+//        tmxXml.append("<animationPoints>");
+//        tmxXml.append(LINE_SEPARATOR);
+//        tmxXml.append("  <data read=\"mapY@mapY,frames,filename,imgIdx,offsetX@offsetY\" encoding=\"nothing\">");
+//        tmxXml.append(LINE_SEPARATOR);
+//        for (int h = 0; h < map.getHeight(); ++h) {
+//            for (int w = 0; w < map.getWidth(); ++w) {
+//                MapTileInfo mti = map.getTiles()[w][h];
+//                if (mti.isHasAni()) {
+//                    int fileIdx = mti.getObjFileIdx();
+//                    String nameIdx = (fileIdx == 0 ? "" : (fileIdx + ""));
+//                    String fileName = "objects" + nameIdx;
+//                    tmxXml.append(
+//                            w+ "@"+ h + "," +
+//                            mti.getAniFrame() + ","+
+//                            fileName + ","+
+//                            mti.getObjImgIdx() + ","
+//
+//                    );
+//
+////					f,x,y
+//                    Arrays.stream(new File(DATA_DIR).list((f, _fn) ->
+//                            (_fn.toLowerCase().startsWith(fileName+".wil")) &&
+//                                    (_fn.toLowerCase().endsWith("wil")))).parallel().forEach(fn -> {
+//                        fn = fn.substring(0, fn.length() - 4).toLowerCase();
+//                        ImageLibrary il_tiles = ImageLibraries.get(fn, DATA_DIR + fn);
+//                        ImageInfo info = il_tiles.info(mti.getObjImgIdx());
+//
+//                        tmxXml.append(
+//                                        info.getOffsetX() + "@"+ info.getOffsetY() + ","
+//
+//                        );
+//                    });
+//                    tmxXml.append(LINE_SEPARATOR);
+//
+//                }
+////				if(w != map.getWidth() - 1 || h != map.getHeight() - 1)
+////					tmxXml.append(",");
+//            }
+////			tmxXml.append(LINE_SEPARATOR);
+//        }
+//        tmxXml.append("  </data>");
+//        tmxXml.append(LINE_SEPARATOR);
+//        tmxXml.append("</animationPoints>");
+//        tmxXml.append(LINE_SEPARATOR);
+//
+//        tmxXml.append(" </custom>");
 
-        tmxXml.append("<animationPoints>");
-        tmxXml.append(LINE_SEPARATOR);
-        tmxXml.append("  <data read=\"mapY@mapY,frames,filename,imgIdx,offsetX@offsetY\" encoding=\"nothing\">");
-        tmxXml.append(LINE_SEPARATOR);
-        for (int h = 0; h < map.getHeight(); ++h) {
-            for (int w = 0; w < map.getWidth(); ++w) {
-                MapTileInfo mti = map.getTiles()[w][h];
-                if (mti.isHasAni()) {
-                    int fileIdx = mti.getObjFileIdx();
-                    String nameIdx = (fileIdx == 0 ? "" : (fileIdx + ""));
-                    String fileName = "objects" + nameIdx;
-                    tmxXml.append(
-                            w+ "@"+ h + "," +
-                            mti.getAniFrame() + ","+
-                            fileName + ","+
-                            mti.getObjImgIdx() + ","
 
-                    );
+        File myFoo = new File(dir, mapName + ".tmx");
+        FileWriter fooWriter = new FileWriter(myFoo, false); // true to append
+        // false to overwrite.
+        fooWriter.write(tmxXml.toString());
+        fooWriter.close();
 
-//					f,x,y
-                    Arrays.stream(new File(DATA_DIR).list((f, _fn) ->
-                            (_fn.toLowerCase().startsWith(fileName+".wil")) &&
-                                    (_fn.toLowerCase().endsWith("wil")))).parallel().forEach(fn -> {
-                        fn = fn.substring(0, fn.length() - 4).toLowerCase();
-                        ImageLibrary il_tiles = ImageLibraries.get(fn, DATA_DIR + fn);
-                        ImageInfo info = il_tiles.info(mti.getObjImgIdx());
-
-                        tmxXml.append(
-                                        info.getOffsetX() + "@"+ info.getOffsetY() + ","
-
-                        );
-                    });
-                    tmxXml.append(LINE_SEPARATOR);
-
-                }
-//				if(w != map.getWidth() - 1 || h != map.getHeight() - 1)
-//					tmxXml.append(",");
-            }
-//			tmxXml.append(LINE_SEPARATOR);
-        }
-        tmxXml.append("  </data>");
-        tmxXml.append(LINE_SEPARATOR);
-        tmxXml.append("</animationPoints>");
-        tmxXml.append(LINE_SEPARATOR);
-
-        tmxXml.append(" </custom>");
-
-
-        Files.write(new File(dir, mapName + ".tmx").toPath(), tmxXml.toString().getBytes(), StandardOpenOption.CREATE);
     }
 
     public static void main(String[] args) throws IOException {
-
-		Arrays.stream(new File(DATA_DIR).list((f, _fn) ->
-				(!_fn.toLowerCase().startsWith("weapon.")) &&
-				(_fn.toLowerCase().endsWith("wzl") || _fn.toLowerCase().endsWith("wil") || _fn.toLowerCase().endsWith("wixxx")))).parallel().forEach(fn -> {
-			fn = fn.substring(0, fn.length() - 4).toLowerCase();
-			try {
-                ImageLibrary il_tiles = ImageLibraries.get(fn, DATA_DIR + fn);
-
-                exportTsx(OUT_DIR, fn, il_tiles);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		});
+//
+//		Arrays.stream(new File(DATA_DIR).list((f, _fn) ->
+//				(!_fn.toLowerCase().startsWith("weapon.")) &&
+//				(_fn.toLowerCase().endsWith("wzl") || _fn.toLowerCase().endsWith("wil") || _fn.toLowerCase().endsWith("wixxx")))).parallel().forEach(fn -> {
+//			fn = fn.substring(0, fn.length() - 4).toLowerCase();
+//			try {
+//                ImageLibrary il_tiles = ImageLibraries.get(fn, DATA_DIR + fn);
+//
+//                exportTsx(OUT_DIR, fn, il_tiles);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		});
 
         Arrays.stream(new File(DATA_MAP).list((f, _fn) ->(_fn.endsWith(".map")))).parallel().forEach(fn -> {
 			String name = fn.substring(0, fn.length() - 4);
